@@ -1,0 +1,6 @@
+@use "sass:math";
+
+// Авто расчет размера
+@function sizeAuto($size){
+  @return math.div($size, 1920) * 100rem;
+}
