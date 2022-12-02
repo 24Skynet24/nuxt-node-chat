@@ -55,6 +55,7 @@
 import MsgCmp from "../components/MsgCmp";
 export default {
   name: 'IndexPage',
+  middleware: ['auth'],
   components: {MsgCmp},
   data() {
     return {

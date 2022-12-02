@@ -1,8 +1,9 @@
 <template>
   <main class="flex-center">
     <article class="flex-column">
+      <p v-if="warning">Имя должно содержать минимум <span>3</span> символа</p>
       <input type="text" placeholder="Введите имя" name="name" id="name" v-model="user_name">
-      <button>Подтвердить</button>
+      <button @click="sendName">Подтвердить</button>
     </article>
   </main>
 </template>
@@ -13,11 +14,16 @@ export default {
   data() {
     return {
       user_name: '',
+      warning: false
     }
   },
   methods: {
     sendName(){
-
+      if (this.user_name.length >= 3) {
+        this.$store.commit('setName', this.user_name)
+        this.$router.push('/')
+      }
+      else this.warning = true
     },
   },
 }
@@ -34,6 +40,12 @@ article {
   border: 1px solid rgb(234, 236, 240);
   border-radius: 8px;
   align-items: center;
+
+  p {
+    font-size: sizeAuto(20);
+    color: #ff0000;
+    margin-bottom: sizeAuto(32);
+  }
 
   input {
     width: sizeAuto(350);
