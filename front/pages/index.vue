@@ -29,12 +29,15 @@
           </div>
         </div>
       </header>
-      <div class="chat flex-column">
-        <msg-cmp
-          v-for="(item, id) in msgs"
-          :key="`msg_${id}`"
-          :msg="item"
-        />
+      <div class="chat">
+        <p v-if="!users[activeUser].messages.length" class="chat-balloon">У вас пока нет сообщений...</p>
+        <div class="flex-column" v-else>
+          <msg-cmp
+            v-for="(item, id) in users[activeUser].messages"
+            :key="`msg_${id}`"
+            :msg="item"
+          />
+        </div>
       </div>
       <div class="msg flex-between flex-align-center">
         <input type="text" name="msg" id="msg" placeholder="Введите сообщение...">
@@ -58,158 +61,94 @@ export default {
           name: 'Abob',
           id: 'abb',
           msg: 'hi!',
+          messages: [
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+            {
+              text: 'msg flex-between flex-align-center',
+              state: true,
+            },
+          ],
         },
         {
           name: 'Abob',
           id: 'abb',
           msg: 'hi!',
-        },
-        {
-          name: 'Abob',
-          id: 'abb',
-          msg: 'hi!',
-        },
-        {
-          name: 'Abob',
-          id: 'abb',
-          msg: 'hi!',
-        },
-        {
-          name: 'Abob',
-          id: 'abb',
-          msg: 'hi!',
-        },
-        {
-          name: 'Abob',
-          id: 'abb',
-          msg: 'hi!',
-        },
-        {
-          name: 'Abob',
-          id: 'abb',
-          msg: 'hi!',
-        },
-        {
-          name: 'Abob',
-          id: 'abb',
-          msg: 'hi!',
-        },
-        {
-          name: 'Abob',
-          id: 'abb',
-          msg: 'hi!',
-        },
-        {
-          name: 'Abob',
-          id: 'abb',
-          msg: 'hi!',
-        },
-        {
-          name: 'Abob',
-          id: 'abb',
-          msg: 'hi!',
-        },
-        {
-          name: 'Abob',
-          id: 'abb',
-          msg: 'hi!',
-        },
-        {
-          name: 'Abob',
-          id: 'abb',
-          msg: 'hi!',
-        },
-        {
-          name: 'Abob',
-          id: 'abb',
-          msg: 'hi!',
-        },
-        {
-          name: 'Abob',
-          id: 'abb',
-          msg: 'hi!',
-        },
-      ],
-      msgs: [
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
-        },
-        {
-          text: 'msg flex-between flex-align-center',
-          state: true,
+          messages: [],
         },
       ],
     }
@@ -385,6 +324,10 @@ section {
     max-height: 80vh;
     overflow-y: auto;
     margin: sizeAuto(24) auto;
+
+    &-balloon {
+      font-size: sizeAuto(16);
+    }
   }
 }
 
