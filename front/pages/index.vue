@@ -19,13 +19,13 @@
         </article>
       </div>
     </aside>
-    <section>
+    <section v-if="activeUser">
       <header>
         <div class="user flex-align-center">
           <div class="logo"></div>
           <div class="flex-column">
             <h6>{{ users[activeUser].name }}</h6>
-            <span>{{ users[activeUser].id }}</span>
+            <span>{{ activeUser }}</span>
           </div>
         </div>
       </header>
@@ -44,6 +44,10 @@
         <button>Отправить</button>
       </div>
     </section>
+
+    <section v-else>
+
+    </section>
   </main>
 </template>
 
@@ -55,11 +59,10 @@ export default {
   data() {
     return {
       peopleSearch: '',
-      activeUser: 0,
-      users: [
-        {
-          name: 'Abob',
-          id: 'abb',
+      activeUser: null,
+      users: {
+        'abob': {
+          name: 'abb',
           msg: 'hi!',
           messages: [
             {
@@ -144,15 +147,28 @@ export default {
             },
           ],
         },
-        {
-          name: 'Abob',
-          id: 'abb',
+        'dbob': {
+          name: 'abb',
           msg: 'hi!',
           messages: [],
         },
-      ],
+      }
     }
   },
+
+  mounted() {
+    document.addEventListener('keydown', this.hideChat)
+  },
+
+  destroyed() {
+    document.removeEventListener('keydown', this.hideChat)
+  },
+
+  methods: {
+    hideChat(event) {
+      if (event.code === "Escape") this.activeUser = null
+    }
+  }
 }
 </script>
 
