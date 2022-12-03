@@ -1,7 +1,7 @@
 <template>
   <main class="flex-center">
     <article class="flex-column">
-      <p v-if="warning">Имя должно содержать минимум <span>3</span> символа</p>
+      <p v-if="warning.state">{{ warning.text }}</p>
       <input type="text" placeholder="Введите имя" name="name" id="name" v-model="user_name">
       <button @click="sendName">Подтвердить</button>
     </article>
@@ -14,16 +14,46 @@ export default {
   data() {
     return {
       user_name: '',
-      warning: false
+      warning: {
+        state: false,
+        text: 'Имя должно содержать минимум 3 символа',
+      }
     }
+  },
+  mounted() {
+    document.addEventListener('keydown', (e) => {
+      if (e.code === "Enter") this.sendName()
+    })
+  },
+
+  destroyed() {
+    this.$socketManager.close()
   },
   methods: {
     sendName(){
       if (this.user_name.length >= 3) {
         this.$store.commit('setName', this.user_name)
-        this.$router.push('/')
+        const user = {
+          id: this.user_name,
+          msg: null,
+          name: this.user_name,
+          last_msg: null,
+          messages: [],
+        }
+        this.$socketManager.send(JSON.stringify(user))
+
+        this.$socket.$on('message', (err) => {
+          if (JSON.parse(err.data).error) this.warning = {
+            state: true,
+            text: JSON.parse(err.data).error
+          }
+          else this.$router.push('/')
+        })
       }
-      else this.warning = true
+      else this.warning = {
+        state: true,
+        text: 'Имя должно содержать минимум 3 символа',
+      }
     },
   },
 }
