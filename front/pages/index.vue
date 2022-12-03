@@ -15,7 +15,7 @@
               <span>@{{ item.id }}</span>
             </div>
           </div>
-          <span class="text">{{ item.msg }}</span>
+          <span class="text">{{ item.last_msg }}</span>
         </article>
       </div>
     </aside>
@@ -61,104 +61,22 @@ export default {
     return {
       peopleSearch: '',
       activeUser: null,
-      users: {
-        'abob': {
-          name: 'abb',
-          msg: 'hi!',
-          messages: [
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-            {
-              text: 'msg flex-between flex-align-center',
-              state: true,
-            },
-          ],
-        },
-        'dbob': {
-          name: 'abb',
-          msg: 'hi!',
-          messages: [],
-        },
-      }
+      users: {}
+    }
+  },
+  computed: {
+    userName() {
+      return this.$store.getters.getUserName
     }
   },
 
-  mounted() {
+  async mounted() {
+    this.$socketManager.connect()
     document.addEventListener('keydown', this.hideChat)
+
+    this.$socket.$on('message', (message) => {
+      this.users = JSON.parse(message.data)
+    })
   },
 
   destroyed() {
