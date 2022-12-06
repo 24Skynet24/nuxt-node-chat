@@ -11,7 +11,7 @@
           <div class="user flex-align-center">
             <div class="logo"></div>
             <div class="flex-column">
-              <h6>{{ item.name }}</h6>
+              <h6>{{ id }}</h6>
               <span>@{{ item.id }}</span>
             </div>
           </div>
@@ -40,8 +40,8 @@
         </div>
       </div>
       <div class="msg flex-between flex-align-center">
-        <input type="text" name="msg" id="msg" placeholder="Введите сообщение...">
-        <button>Отправить</button>
+        <input type="text" name="msg" id="msg" placeholder="Введите сообщение..." v-model="msg">
+        <button @click="sendMessage">Отправить</button>
       </div>
     </section>
 
@@ -61,7 +61,9 @@ export default {
     return {
       peopleSearch: '',
       activeUser: null,
-      users: {}
+      users: {},
+      allUsers: {},
+      msg: ''
     }
   },
   computed: {
@@ -70,12 +72,21 @@ export default {
     }
   },
 
-  async mounted() {
+  watch: {
+    allUsers(e) {
+      this.users = e
+    }
+  },
+
+  mounted() {
     this.$socketManager.connect()
     document.addEventListener('keydown', this.hideChat)
 
-    this.$socket.$on('message', (message) => {
-      this.users = JSON.parse(message.data)
+    this.$socket.$on('message',  (message) => {
+      this.allUsers = JSON.parse(message.data)
+      for (let i in this.allUsers) {
+        if (i === this.userName) delete this.allUsers[i]
+      }
     })
   },
 
@@ -86,7 +97,23 @@ export default {
   methods: {
     hideChat(event) {
       if (event.code === "Escape") this.activeUser = null
-    }
+    },
+
+    async sendMessage(){
+      if (this.activeUser && this.msg) {
+        const message = {
+          data: {
+            id: this.activeUser,
+            msg: {
+              state: false,
+              text: this.msg
+            },
+          },
+          type: 2,
+        }
+        await this.$socketManager.send(JSON.stringify(message))
+      }
+    },
   }
 }
 </script>

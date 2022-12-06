@@ -16,44 +16,51 @@ export default {
       user_name: '',
       warning: {
         state: false,
-        text: 'Имя должно содержать минимум 3 символа',
-      }
+        text: null,
+      },
+      allUsers: {},
     }
   },
+  computed: {
+    getUsersName() {
+      return Object.keys(this.allUsers)
+    },
+  },
+
   mounted() {
     document.addEventListener('keydown', (e) => {
       if (e.code === "Enter") this.sendName()
     })
-  },
-
-  destroyed() {
+    this.$socket.$on('message', async (messageData) => {
+      this.allUsers = await JSON.parse(messageData.data)
+    })
     this.$socketManager.close()
   },
   methods: {
-    sendName(){
-      if (this.user_name.length >= 3) {
-        this.$store.commit('setName', this.user_name)
-        const user = {
-          id: this.user_name,
-          msg: null,
-          name: this.user_name,
-          last_msg: null,
-          messages: [],
+    async sendName() {
+      if (this.user_name.length < 3) {
+        this.warning = {
+          state: true,
+          text: 'Имя должно содержать минимум 3 символа',
         }
-        this.$socketManager.send(JSON.stringify(user))
+        return
+      }
 
-        this.$socket.$on('message', (err) => {
-          if (JSON.parse(err.data).error) this.warning = {
-            state: true,
-            text: JSON.parse(err.data).error
-          }
-          else this.$router.push('/')
-        })
+      if (this.getUsersName.includes(this.user_name)) {
+        this.warning = {
+          state: true,
+          text: 'Пользователь с таким именем уже существует!',
+        }
+        return
       }
-      else this.warning = {
-        state: true,
-        text: 'Имя должно содержать минимум 3 символа',
+
+      this.$store.commit('setName', this.user_name)
+      const message = {
+        type: 1,
+        data: this.user_name
       }
+      await this.$socketManager.send(JSON.stringify(message))
+      await this.$router.push('/')
     },
   },
 }
