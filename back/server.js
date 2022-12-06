@@ -5,7 +5,11 @@ const { Server } = ws
 
 const connects = {}
 const wss = new Server({port: 8000})
-const users = {}
+const allUsers = {}
+
+const sendUsers = () => {
+    for (let i in connects) connects[i].send(JSON.stringify(allUsers))
+}
 
 // Подключение
 wss.on("connection", (ws) => {
@@ -13,26 +17,28 @@ wss.on("connection", (ws) => {
     connects[uid] = ws
 
     console.log("Connection success")
-    // Отправка всех сообщений клиенту
-    ws.send(JSON.stringify(users))
+    ws.send(JSON.stringify(allUsers))
 
     // Сообщения от клиента
     ws.on('message', (rawMessage) => {
-        const message = JSON.parse(rawMessage)
+        const messageTypes = {
+            1: ( userName ) => {
+                allUsers[userName] = {
+                    id: null,
+                    last_msg: null,
+                    messages: []
+                }
+            },
 
-        if (Object.keys(users).includes(message.id)) {
-            connects[uid].send(JSON.stringify({error: 'User already exists!'}))
-            return
+            2: (user) => {
+                allUsers[user.id].last_msg = user.msg.text
+                allUsers[user.id].messages.push(user.msg)
+            },
         }
 
-        users[message.id] ??= {}
-
-        if (!users[message.id].messages) users[message.id].messages = []
-        if (message.msg) users[message.id].messages.push(message.msg)
-        users[message.id].name = message.name
-        users[message.id].last_msg = '' && message.msg.text
-
-        for (const id in connects) connects[id].send(JSON.stringify(users))
+        const message = JSON.parse(rawMessage)
+        messageTypes[message.type](message.data)
+        sendUsers()
     })
 
     // Закрытие клиента
