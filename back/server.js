@@ -7,8 +7,11 @@ const connects = {}
 const wss = new Server({port: 8000})
 const allUsers = {}
 
-const sendUsers = () => {
-    for (let i in connects) connects[i].send(JSON.stringify(allUsers))
+const sendUser = (to, payload) => {
+    connects[to].send(JSON.stringify(payload))
+}
+const sendAll = (payload) => {
+    for (let i in connects) sendUser(i, payload)
 }
 
 // Подключение
@@ -23,22 +26,30 @@ wss.on("connection", (ws) => {
     ws.on('message', (rawMessage) => {
         const messageTypes = {
             1: ( userName ) => {
-                allUsers[userName] = {
-                    id: null,
-                    last_msg: null,
-                    messages: []
+                const temp = {
+                    id: uid,
+                    messages: [],
+                    username: userName,
                 }
+                sendAll({
+                    type: 1,
+                    payload: temp
+                })
+                allUsers[uid] = temp
             },
 
             2: (user) => {
-                allUsers[user.id].last_msg = user.msg.text
                 allUsers[user.id].messages.push(user.msg)
+                sendUser(user.msg.to, {
+                    type: 2,
+                    payload: allUsers[user.msg.to]
+                })
+                console.log(allUsers[user.msg.to])
             },
         }
 
         const message = JSON.parse(rawMessage)
         messageTypes[message.type](message.data)
-        sendUsers()
     })
 
     // Закрытие клиента

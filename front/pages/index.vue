@@ -11,11 +11,10 @@
           <div class="user flex-align-center">
             <div class="logo"></div>
             <div class="flex-column">
-              <h6>{{ id }}</h6>
+              <h6>{{ item.username }}</h6>
               <span>@{{ item.id }}</span>
             </div>
           </div>
-          <span class="text">{{ item.last_msg }}</span>
         </article>
       </div>
     </aside>
@@ -24,7 +23,7 @@
         <div class="user flex-align-center">
           <div class="logo"></div>
           <div class="flex-column">
-            <h6>{{ users[activeUser].name }}</h6>
+            <h6>{{ users[activeUser].username }}</h6>
             <span>{{ activeUser }}</span>
           </div>
         </div>
@@ -69,7 +68,7 @@ export default {
   computed: {
     userName() {
       return this.$store.getters.getUserName
-    }
+    },
   },
 
   watch: {
@@ -83,9 +82,21 @@ export default {
     document.addEventListener('keydown', this.hideChat)
 
     this.$socket.$on('message',  (message) => {
-      this.allUsers = JSON.parse(message.data)
-      for (let i in this.allUsers) {
-        if (i === this.userName) delete this.allUsers[i]
+      const data = JSON.parse(message.data);
+
+      if (!data.type) {
+        // console.log(data)
+        this.allUsers = data
+        return;
+      }
+
+      switch (data.type) {
+        case 1:
+            this.allUsers[data.payload.id] = data.payload
+          break;
+        case 2:
+          this.allUsers[data.payload.id].messages.push(data.payload.messages.at(-1))
+          break;
       }
     })
   },
@@ -101,12 +112,15 @@ export default {
 
     async sendMessage(){
       if (this.activeUser && this.msg) {
+        console.log(1)
         const message = {
           data: {
             id: this.activeUser,
             msg: {
               state: false,
-              text: this.msg
+              text: this.msg,
+              from_name: this.userName,
+              to: this.allUsers[this.activeUser].id,
             },
           },
           type: 2,
