@@ -19,6 +19,8 @@ export default {
         text: null,
       },
       allUsers: {},
+      chats: {},
+      id: null,
     }
   },
   computed: {
@@ -31,8 +33,29 @@ export default {
     document.addEventListener('keydown', (e) => {
       if (e.code === "Enter") this.sendName()
     })
-    this.$socket.$on('message', async (messageData) => {
-      this.allUsers = await JSON.parse(messageData.data)
+    this.$socket.$on('message', async (message) => {
+      const data = JSON.parse(message.data);
+
+      switch (data.type) {
+        case 'new':
+            if (data.otherConnections === undefined) {
+              return this.chats[data.connectionId] = {}
+            }
+
+            this.id = data.id;
+
+            for (let i = 0, length = data.otherConnections.length; i < length; ++i) {
+              this.chats[data.otherConnections[i]] = {}
+            }
+          break;
+        case 'updateProfile':
+            this.chats[data.data.id].username = data.data.username
+          break
+      }
+
+      console.log(this.chats)
+
+      // this.allUsers = await JSON.parse(messageData.data)
     })
     this.$socketManager.close()
   },
@@ -55,12 +78,17 @@ export default {
       }
 
       this.$store.commit('setName', this.user_name)
+
       const message = {
-        type: 1,
-        data: this.user_name
+        type: 'updateProfile',
+        data: {
+          id: this.id,
+          username: this.user_name
+        }
       }
+
       await this.$socketManager.send(JSON.stringify(message))
-      await this.$router.push('/')
+      // await this.$router.push('/')
     },
   },
 }
